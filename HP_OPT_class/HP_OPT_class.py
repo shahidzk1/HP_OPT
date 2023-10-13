@@ -6,14 +6,12 @@ from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.backend import clear_session
 from tensorflow.keras.utils import to_categorical
-import keras
 from tensorflow.keras.layers import Dense, Dropout, Conv1D, Flatten
-from keras.layers import Dropout
-from keras.models import Sequential
 import os
 import gc
 import warnings
 import numpy as np
+import pandas as pd
 import optuna
 from optuna.integration import KerasPruningCallback
 from optuna.trial import TrialState
@@ -49,11 +47,11 @@ class HP_OPT:
     def keras_objective(self, trial):
         n_layers = trial.suggest_int("n_layers", self.MLP_hyp_par['n_layers'][0], self.MLP_hyp_par['n_layers'][1])
         model = Sequential()
-        model.add(keras.layers.Flatten(input_shape=(self.X_train.shape[1],)))
+        model.add(tf.keras.layers.Flatten(input_shape=(self.X_train.shape[1],)))
         for i in range(n_layers):
             num_hidden = trial.suggest_int("n_units_l{}".format(i), self.MLP_hyp_par['n_units'][0], self.MLP_hyp_par['n_units'][1], log=True)
-            model.add(keras.layers.Dense(num_hidden, activation="relu"))
-        model.add(keras.layers.Dense(self.n_classes, activation=tf.nn.softmax))
+            model.add(tf.keras.layers.Dense(num_hidden, activation="relu"))
+        model.add(tf.keras.layers.Dense(self.n_classes, activation=tf.nn.softmax))
 
         learning_rate = trial.suggest_float("learning_rate", self.MLP_hyp_par['learning_rate'][0], self.MLP_hyp_par['learning_rate'][1], log=True)
         model.compile(
@@ -62,7 +60,7 @@ class HP_OPT:
             metrics=tf.keras.metrics.AUC(),
         )
 
-        keras.backend.clear_session()
+        tf.keras.backend.clear_session()
 
         model.fit(self.X_train, self.Y_train, batch_size=self.batch_size,
             callbacks=[optuna.integration.TFKerasPruningCallback(trial, "val_auc"), MyCustomCallback()],
@@ -96,13 +94,11 @@ class HP_OPT:
         return auc_mean
 
     def cnn_objective(self, trial):
-
       scaler = StandardScaler()
       X_train = scaler.fit_transform(self.X_train)
       X_valid = scaler.transform(self.X_valid)
       X_train = self.X_train.to_numpy().reshape(self.X_train.shape[0], self.X_train.shape[1], 1)
       X_valid = self.X_valid.to_numpy().reshape(self.X_valid.shape[0], self.X_valid.shape[1], 1)
-
 
       clear_session()
 
@@ -135,7 +131,7 @@ class HP_OPT:
       n_layers = trial.suggest_int("n_layers", self.cnn_hyp_par['n_layers_min'], self.cnn_hyp_par['n_layers_max'])
       for i in range(n_layers):
           num_hidden = trial.suggest_int("n_units_l{}".format(i), self.cnn_hyp_par['n_units_min'], self.cnn_hyp_par['n_units_max'], log=True)
-          model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001)))
+          model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001))
           dropout_rate = trial.suggest_float("dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
           model.add(Dropout(dropout_rate))
           model.add(BatchNormalization())
@@ -145,7 +141,7 @@ class HP_OPT:
       learning_rate = trial.suggest_float("learning_rate", self.cnn_hyp_par['learning_rate_min'], self.cnn_hyp_par['learning_rate_max'], log=True)
       model.compile(
           loss="sparse_categorical_crossentropy",
-          optimizer=Adam(learning_rate=learning_rate),
+          optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),  # Use tf.keras.optimizers
           metrics=["accuracy"],
       )
 
@@ -153,14 +149,9 @@ class HP_OPT:
       reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.001)
 
       model.fit(
-          X_train,
-          self.Y_train,
-          validation_data=(X_valid, self.Y_valid),
-          shuffle=True,
-          batch_size=self.batch_size,
-          epochs=self.epochs,
-          verbose=False,
-          callbacks=[early_stop, reduce_lr]
+          X_train, self.Y_train, validation_data=(X_valid, self.Y_valid),
+          shuffle=True, batch_size=self.batch_size,
+          epochs=self.epochs, verbose=False, callbacks=[early_stop, reduce_lr]
       )
 
       score = model.evaluate(X_valid, self.Y_valid, verbose=0)

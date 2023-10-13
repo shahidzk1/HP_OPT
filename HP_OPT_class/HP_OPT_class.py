@@ -131,7 +131,7 @@ class HP_OPT:
       n_layers = trial.suggest_int("n_layers", self.cnn_hyp_par['n_layers_min'], self.cnn_hyp_par['n_layers_max'])
       for i in range(n_layers):
           num_hidden = trial.suggest_int("n_units_l{}".format(i), self.cnn_hyp_par['n_units_min'], self.cnn_hyp_par['n_units_max'], log=True)
-          model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001))
+          model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001)))
           dropout_rate = trial.suggest_float("dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
           model.add(Dropout(dropout_rate))
           model.add(BatchNormalization())

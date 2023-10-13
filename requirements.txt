@@ -1,0 +1,7 @@
+numpy
+pandas
+# Machine learning libraries
+tensorflow
+optuna
+xgboost
+scikit-learn

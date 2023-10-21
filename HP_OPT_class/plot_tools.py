@@ -2,11 +2,6 @@ from sklearn.metrics import roc_curve, auc
 import numpy as np
 import matplotlib.pyplot as plt
 
-n_classes = len(np.unique(y_test))
-alphas = [0.9, 0.8] * 7
-linestyles = ['-.', '-'] * 7
-linewidthss = [2, 1] * 7
-
 def plot_roc_curves(dummy_y_test, predictions_test_numpy, n_classes, linestyles, linewidthss, label_for_auc):
     roc_data = {}
     fig, ax = plt.subplots(figsize=(10, 8))

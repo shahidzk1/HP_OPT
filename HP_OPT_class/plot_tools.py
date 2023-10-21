@@ -1,4 +1,6 @@
 from sklearn.metrics import roc_curve, auc
+import numpy as np
+import matplotlib.pyplot as plt
 
 n_classes = len(np.unique(y_test))
 alphas = [0.9, 0.8] * 7

@@ -16,18 +16,14 @@ from optuna.integration import KerasPruningCallback
 from optuna.trial import TrialState
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
-from sklearn.model_selection import StratifiedKFold, cross_val_score
+from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import LabelEncoder
 import xgboost as xgb
 from xgboost import XGBClassifier
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader, TensorDataset
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import LabelEncoder
-import numpy as np
-from sklearn.preprocessing import StandardScaler
-import optuna
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
@@ -56,28 +52,33 @@ class HP_OPT:
         self.epochs = 10
         self.input_shape = (self.X_train.shape[1],)
     def keras_objective(self, trial):
-        n_layers = trial.suggest_int("n_layers", self.mlp_hyp_par['n_layers'][0], self.mlp_hyp_par['n_layers'][1])
-        model = Sequential()
-        model.add(tf.keras.layers.Flatten(input_shape=(self.X_train.shape[1],)))
-        for i in range(n_layers):
-            num_hidden = trial.suggest_int("n_units_l{}".format(i), self.mlp_hyp_par['n_units'][0], self.mlp_hyp_par['n_units'][1], log=True)
-            model.add(tf.keras.layers.Dense(num_hidden, activation="relu"))
-        model.add(tf.keras.layers.Dense(self.num_classes, activation=tf.nn.softmax))
-        learning_rate = trial.suggest_float("learning_rate", self.mlp_hyp_par['learning_rate'][0], self.mlp_hyp_par['learning_rate'][1], log=True)
-        model.compile(
-            loss=tf.keras.losses.CategoricalCrossentropy(),
-            optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
-            metrics=tf.keras.metrics.AUC(),
-        )
-        tf.keras.backend.clear_session()
-        model.fit(self.X_train, self.Y_train, batch_size=self.batch_size,
-            callbacks=[optuna.integration.TFKerasPruningCallback(trial, "val_auc"), MyCustomCallback()],
-            epochs=self.epochs,
-            validation_split=0.1,
-            verbose=1
-        )
-        score = model.evaluate(self.X_valid, self.Y_valid, verbose=0)
-        return score[1]
+      le = LabelEncoder()
+      Y_train_encoded = le.fit_transform(self.Y_train)
+      Y_valid_encoded = le.transform(self.Y_valid)
+      Y_train_new = to_categorical(Y_train_encoded)
+      Y_valid_new = to_categorical(Y_valid_encoded)
+      n_layers = trial.suggest_int("n_layers", self.mlp_hyp_par['n_layers'][0], self.mlp_hyp_par['n_layers'][1])
+      model = Sequential()
+      model.add(tf.keras.layers.Flatten(input_shape=(self.X_train.shape[1],)))
+      for i in range(n_layers):
+          num_hidden = trial.suggest_int("n_units_l{}".format(i), self.mlp_hyp_par['n_units'][0], self.mlp_hyp_par['n_units'][1], log=True)
+          model.add(tf.keras.layers.Dense(num_hidden, activation="relu"))
+      model.add(tf.keras.layers.Dense(self.num_classes, activation=tf.nn.softmax))
+      learning_rate = trial.suggest_float("learning_rate", self.mlp_hyp_par['learning_rate'][0], self.mlp_hyp_par['learning_rate'][1], log=True)
+      model.compile(
+          loss=tf.keras.losses.CategoricalCrossentropy(),
+          optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
+          metrics=tf.keras.metrics.AUC(),
+      )
+      tf.keras.backend.clear_session()
+      model.fit(self.X_train, Y_train_new, batch_size=self.batch_size,
+          callbacks=[optuna.integration.TFKerasPruningCallback(trial, "val_auc"), MyCustomCallback()],
+          epochs=self.epochs,
+          validation_split=0.1,
+          verbose=1
+      )
+      score = model.evaluate(self.X_valid, Y_valid_new, verbose=0)
+      return score[1]
 
     def xgboost_objective(self, trial):
         param = {

@@ -165,12 +165,12 @@ class HP_OPT:
           metrics=["accuracy"],
       )
       early_stop = EarlyStopping(monitor='val_loss', patience=3)
-      reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.001)
+      reduce_lr = ReduceLROnPlateau(factor=0.2, patience=5, min_lr=0.001)
       model.fit(
-          X_train, self.Y_train, validation_data=(X_valid, self.Y_valid),
-          shuffle=True, batch_size=self.batch_size,
-          epochs=self.epochs, verbose=False, callbacks=[early_stop, reduce_lr]
-      )
+            X_train, self.Y_train, validation_data=(X_valid, self.Y_valid),
+            shuffle=True, batch_size=self.batch_size,
+            epochs=self.epochs, verbose=False, callbacks=[early_stop, reduce_lr]
+        )
       score = model.evaluate(X_valid, self.Y_valid, verbose=0)
       print(f"Trial {trial.number}, Score: {score[1]}")
       print(f"Parameters: {trial.params}")

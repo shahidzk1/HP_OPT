@@ -14,11 +14,9 @@ import pandas as pd
 import optuna
 from optuna.integration import KerasPruningCallback
 from optuna.trial import TrialState
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import StratifiedKFold, cross_val_score, train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 import xgboost as xgb
 from xgboost import XGBClassifier
 import torch

@@ -131,6 +131,7 @@ class HP_OPT:
         return auc_mean
 
     def cnn_objective(self, trial):
+      input_shape = (self.X_train.shape[1], 1)
       scaler = StandardScaler()
       X_train = scaler.fit_transform(self.X_train)
       X_valid = scaler.transform(self.X_valid)

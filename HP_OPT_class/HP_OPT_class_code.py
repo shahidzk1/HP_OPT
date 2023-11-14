@@ -34,53 +34,36 @@ class MyCustomCallback(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         tf.keras.backend.clear_session()
         gc.collect()
+
 class HP_OPT:
-    def __init__(self, x_train, y_train, batch_size=32, n_trials=10,
-                 mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None):
+    def __init__(self, x_train, y_train, batch_size=32, n_trials=10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None):
+        """"
+        This class can be used to optimize the hyperparameters of different machine learning algorithms such as multi-layer perception, XGboost, Convolutional neural network (1D), and transformers.
+        
+        Use case: hp_optimizer = HP_OPT(x_train, y_train, batch_size=32, n_trials=10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None)
+        
+        Args:
+            x_train (pandas.core.frame.DataFrame): Should contain variables for training
+            y_train (pandas.core.series.Series): The target array
+        
+        """
         self.x_train = x_train
         self.y_train = y_train
         self.num_classes = num_classes
         self.batch_size = batch_size
         self.n_trials = n_trials
-        self.mlp_hyp_par = mlp_hyp_par or {
-            'n_layers': (2, 22),
-            'n_units': (2500, 4500),
-            'learning_rate': (1e-5, 1e-1)
-        }
-        self.xgb_hyp_para = xgb_hyp_para or {
-        'n_estimators': (100, 1000),
-        'alpha': (2, 30),
-        'gamma': (0, 1),
-        'learning_rate': (0.01, 1),
-        'max_depth': (0, 10)
-    }
-        self.cnn_hyp_par = cnn_hyp_par or {
-        'filters': [32, 64],
-        'kernel_size': [3, 5],
-        'strides': [1, 2],
-        'n_conv_layers_min': 0,
-        'n_conv_layers_max': 3,
-        'dropout_min': 0.0,
-        'dropout_max': 0.5,
-        'n_layers_min': 2,
-        'n_layers_max': 22,
-        'n_units_min': 1000,
-        'n_units_max': 1500,
-        'learning_rate_min': 1e-5,
-        'learning_rate_max': 1e-1
-    }
-        self.transformer_hyp_par = transformer_hyp_par or {
-        'd_model': (64, 256),
-        'num_heads': (2, 8),
-        'num_layers': (2, 15),
-        'dropout': (0.1, 0.5),
-        'weight_decay': (1e-6, 1e-3),
-        'l1_regularization': (1e-6, 1e-3),
-        'learning_rate': (1e-5, 1e-2)
-    }
-        self.X_train, self.X_valid, self.Y_train, self.Y_valid = train_test_split(
-            x_train, y_train, test_size=0.2, random_state=324, stratify=y_train
-        )
+        #The default hyperparameters are given here
+        self.mlp_hyp_par = mlp_hyp_par or { 'n_layers': (2, 22),'n_units': (2500, 4500), 'learning_rate': (1e-5, 1e-1)}
+        
+        self.xgb_hyp_para = xgb_hyp_para or { 'n_estimators': (100, 1000), 'alpha': (2, 30),'gamma': (0, 1), 'learning_rate': (0.01, 1), 'max_depth': (0, 10) }
+
+        self.cnn_hyp_par = cnn_hyp_par or {'filters': [32, 64], 'kernel_size': [3, 5],'strides': [1, 2],'n_conv_layers_min': 0,'n_conv_layers_max': 3,'dropout_min': 0.0,'dropout_max': 0.5,
+        'n_layers_min': 2, 'n_layers_max': 22,'n_units_min': 1000,'n_units_max': 1500, 'learning_rate_min': 1e-5,'learning_rate_max': 1e-1}
+                     
+        self.transformer_hyp_par = transformer_hyp_par or {'d_model': (64, 256),'num_heads': (2, 8),'num_layers': (2, 15),'dropout': (0.1, 0.5),
+        'weight_decay': (1e-6, 1e-3),'l1_regularization': (1e-6, 1e-3), 'learning_rate': (1e-5, 1e-2) }
+                     
+        self.X_train, self.X_valid, self.Y_train, self.Y_valid = train_test_split( x_train, y_train, test_size=0.2, random_state=324, stratify=y_train )
         self.epochs = 10
         self.input_shape = (self.X_train.shape[1],)
     def keras_objective(self, trial):

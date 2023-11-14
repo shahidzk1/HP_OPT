@@ -201,6 +201,7 @@ class HP_OPT:
 
     def transformer_objective(self, trial):
       num_workers = 2
+      encoder = LabelEncoder()
       y_train_encoded = encoder.transform(self.Y_train)
       y_train_tensor = torch.tensor(y_train_encoded, dtype=torch.int64)
       scaler = StandardScaler()

@@ -112,7 +112,7 @@ class HP_OPT:
               filters=trial.suggest_categorical("filters", self.cnn_hyp_par['filters']),
               kernel_size=trial.suggest_categorical("kernel_size", self.cnn_hyp_par['kernel_size']),
               strides=trial.suggest_categorical("strides", self.cnn_hyp_par['strides']),
-              activation="linear", input_shape=self.input_shape,
+              activation="linear", input_shape=input_shape, name=f'conv1d_{trial.number}' ,
           )
       )
       n_conv_layers = trial.suggest_int("n_conv_layers", self.cnn_hyp_par['n_conv_layers_min'], self.cnn_hyp_par['n_conv_layers_max'])
@@ -122,7 +122,7 @@ class HP_OPT:
                   filters=trial.suggest_categorical("filters", self.cnn_hyp_par['filters']),
                   kernel_size=trial.suggest_categorical("kernel_size", self.cnn_hyp_par['kernel_size']),
                   strides=trial.suggest_categorical("strides", self.cnn_hyp_par['strides']),
-                  activation="linear",
+                  activation="linear",  name=f'conv1d_{trial.number}_layer_{i}',
               )
           )
           dropout_rate = trial.suggest_float("conv_dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
@@ -131,7 +131,7 @@ class HP_OPT:
       n_layers = trial.suggest_int("n_layers", self.cnn_hyp_par['n_layers_min'], self.cnn_hyp_par['n_layers_max'])
       for i in range(n_layers):
           num_hidden = trial.suggest_int("n_units_l{}".format(i), self.cnn_hyp_par['n_units_min'], self.cnn_hyp_par['n_units_max'], log=True)
-          model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001)))
+          model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001),name=f'dense_{trial.number}_layer_{i}'))
           dropout_rate = trial.suggest_float("dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
           model.add(Dropout(dropout_rate))
           model.add(BatchNormalization())

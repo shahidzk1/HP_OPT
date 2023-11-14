@@ -34,15 +34,23 @@ class MyCustomCallback(tf.keras.callbacks.Callback):
         gc.collect()
 
 class HP_OPT:
-    def __init__(self, x_train, y_train, batch_size=32, n_trials=10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None):
+    def __init__(self, x_train, y_train, batch_size=32, n_trials=10, n_epochs =10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None):
         """"
-        This class can be used to optimize the hyperparameters of different machine learning algorithms such as multi-layer perception, XGboost, Convolutional neural network (1D), and transformers.
+        This class can be used to optimize the hyperparameters of different machine learning algorithms such as multi-layer perception, XGboost, Convolutional neural network (1D),
+        and transformers for the classification of tabular data.
         
         Use case: hp_optimizer = HP_OPT(x_train, y_train, batch_size=32, n_trials=10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None)
         
         Args:
-            x_train (pandas.core.frame.DataFrame): Should contain variables for training
-            y_train (pandas.core.series.Series): The target array
+            x_train                (pandas.core.frame.DataFrame)    : Should contain variables for training
+            y_train                (pandas.core.series.Series)      : The target array
+            batch_size             (int)                            : The size of the batch for the neural networks
+            n_trials               (int)                            : The number of trials for the Optuna HP optimization
+            n_epochs               (int)                            : The number of epochs per trial of Optuna
+            mlp_hyp_par            (dict)                           : A dictionary of the hyper-parameters of the MLP
+            xgb_hyp_para           (dict)                           : A dictionary of the hyper-parameters of the XGBoost Classifier
+            cnn_hyp_par            (dict)                           : A dictionary of the hyper-parameters of the CNN
+            transformer_hyp_par    (dict)                           : A dictionary of the hyper-parameters of the transformer            
         
         """
         self.x_train = x_train
@@ -62,7 +70,7 @@ class HP_OPT:
         'weight_decay': (1e-6, 1e-3),'l1_regularization': (1e-6, 1e-3), 'learning_rate': (1e-5, 1e-2) }
                      
         self.X_train, self.X_valid, self.Y_train, self.Y_valid = train_test_split( x_train, y_train, test_size=0.2, random_state=324, stratify=y_train )
-        self.epochs = 10
+        self.epochs = n_epochs
         self.input_shape = (self.X_train.shape[1],)
     def keras_objective(self, trial):
       le = LabelEncoder()

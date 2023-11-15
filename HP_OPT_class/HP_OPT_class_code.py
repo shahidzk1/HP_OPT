@@ -200,42 +200,43 @@ class HP_OPT:
       return TabularTransformer()
 
     def transformer_objective(self, trial):
-      num_workers = 2
-      encoder = LabelEncoder()
-      y_train_encoded = encoder.transform(self.Y_train)
-      y_train_tensor = torch.tensor(y_train_encoded, dtype=torch.int64)
-      scaler = StandardScaler()
-      X_train_new = scaler.fit_transform(self.X_train)
-      X_train_tensor = torch.tensor(X_train_new, dtype=torch.float32)
-      train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
-      train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
-      X_valid_new = scaler.transform(self.X_valid)
-      X_valid_tensor = torch.tensor(X_valid_new, dtype=torch.float32)
-      y_valid_encoded = encoder.transform(self.Y_valid)
-      y_valid_tensor = torch.tensor(y_valid_encoded, dtype=torch.int64)
-      valid_dataset = TensorDataset(X_valid_tensor, y_valid_tensor)
-      valid_loader = DataLoader(valid_dataset, batch_size=batch_size, num_workers=num_workers)
-      d_model = trial.suggest_int('d_model', *self.transformer_hyp_par['d_model'])
-      num_heads = trial.suggest_int('num_heads', *self.transformer_hyp_par['num_heads'])
-      num_layers = trial.suggest_int('num_layers', *self.transformer_hyp_par['num_layers'])
-      dropout = trial.suggest_float('dropout', *self.transformer_hyp_par['dropout'])
-      weight_decay = trial.suggest_float('weight_decay', *self.transformer_hyp_par['weight_decay'], log=True)
-      l1_regularization = trial.suggest_float('l1_regularization', *self.transformer_hyp_par['l1_regularization'], log=True)
-      learning_rate = trial.suggest_float('learning_rate', *self.transformer_hyp_par['learning_rate'], log=True)
+        num_workers = 2
+        encoder = LabelEncoder()
+        Y_train_encoded = encoder.fit_transform(self.Y_train)
+        y_train_tensor = torch.tensor(Y_train_encoded, dtype=torch.int64)
+        scaler = StandardScaler()
+        X_train_new = scaler.fit_transform(self.X_train)
+        X_train_tensor = torch.tensor(X_train_new, dtype=torch.float32)
+        train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
 
-      if d_model % num_heads != 0:
+        X_valid_new = scaler.transform(self.X_valid)
+        X_valid_tensor = torch.tensor(X_valid_new, dtype=torch.float32)
+        y_valid_encoded = encoder.transform(self.Y_valid)
+        y_valid_tensor = torch.tensor(y_valid_encoded, dtype=torch.int64)
+        valid_dataset = TensorDataset(X_valid_tensor, y_valid_tensor)
+        valid_loader = DataLoader(valid_dataset, batch_size=batch_size, num_workers=num_workers)
+        d_model = trial.suggest_int('d_model', *self.transformer_hyp_par['d_model'])
+        num_heads = trial.suggest_int('num_heads', *self.transformer_hyp_par['num_heads'])
+        num_layers = trial.suggest_int('num_layers', *self.transformer_hyp_par['num_layers'])
+        dropout = trial.suggest_float('dropout', *self.transformer_hyp_par['dropout'])
+        weight_decay = trial.suggest_float('weight_decay', *self.transformer_hyp_par['weight_decay'], log=True)
+        l1_regularization = trial.suggest_float('l1_regularization', *self.transformer_hyp_par['l1_regularization'], log=True)
+        learning_rate = trial.suggest_float('learning_rate', *self.transformer_hyp_par['learning_rate'], log=True)
+        
+        if d_model % num_heads != 0:
           return 1000.0
-      device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-      model = self.create_transformer_model(self.input_shape[0], len(np.unique(self.y_train)), d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization).to(device)
-      optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
-      criterion = nn.CrossEntropyLoss()
-      scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5)
-      scaler = amp.GradScaler()
-
-      best_validation_loss = float('inf')
-      epochs_without_improvement = 0
-      
-      for epoch in range(10):
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        model = self.create_transformer_model(self.input_shape[0], len(np.unique(self.y_train)), d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization).to(device)
+        optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
+        criterion = nn.CrossEntropyLoss()
+        scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=5)
+        scaler = amp.GradScaler()
+        
+        best_validation_loss = float('inf')
+        epochs_without_improvement = 0
+        
+        for epoch in range(10):
           running_loss = 0.0
           for i, data in enumerate(train_loader):
               inputs, labels = data[0].to(device), data[1].to(device)
@@ -243,13 +244,13 @@ class HP_OPT:
               with amp.autocast():
                   outputs, l1_loss = model(inputs)
                   loss = criterion(outputs, labels) + l1_loss
-
+        
               scaler.scale(loss).backward()
               scaler.step(optimizer)
               scaler.update()
-
+        
               running_loss += loss.item()
-
+        
           validation_loss = 0.0
           with torch.no_grad():
               for data in valid_loader:
@@ -265,7 +266,7 @@ class HP_OPT:
               epochs_without_improvement += 1
           if epochs_without_improvement > 10:
               break
-      return validation_loss
+        return validation_loss
 
     def optimize_transformer(self):
         study = optuna.create_study(direction='minimize', pruner=optuna.pruners.SuccessiveHalvingPruner(),

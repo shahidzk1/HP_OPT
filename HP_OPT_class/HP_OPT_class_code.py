@@ -208,7 +208,7 @@ class HP_OPT:
         X_train_new = scaler.fit_transform(self.X_train)
         X_train_tensor = torch.tensor(X_train_new, dtype=torch.float32)
         train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
-        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers)
+        train_loader = DataLoader(train_dataset, batch_size=self.batch_size, shuffle=True, num_workers=num_workers)
         X_valid_new = scaler.transform(self.X_valid)
         X_valid_tensor = torch.tensor(X_valid_new, dtype=torch.float32)
         y_valid_encoded = encoder.transform(self.Y_valid)

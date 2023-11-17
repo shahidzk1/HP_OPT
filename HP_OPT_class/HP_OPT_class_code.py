@@ -178,6 +178,7 @@ class HP_OPT:
 
     def create_transformer_model(self, input_dim, num_classes, d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization):
       assert d_model % num_heads == 0, "d_model must be divisible by num_heads"
+      d_model = int(np.ceil(d_model / num_heads) * num_heads)
       class TabularTransformer(nn.Module):
         def __init__(self):
           super(TabularTransformer, self).__init__()

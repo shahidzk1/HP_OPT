@@ -1,0 +1,16 @@
+HiggsBosonChallenge.ipynb
+LICENSE
+Makefile
+README.md
+requirements.txt
+setup.py
+HP_OPT_class/HP_OPT_class_code.py
+HP_OPT_class/__init__.py
+HP_OPT_class/plot_tools.py
+HP_OPT_class.egg-info/PKG-INFO
+HP_OPT_class.egg-info/SOURCES.txt
+HP_OPT_class.egg-info/dependency_links.txt
+HP_OPT_class.egg-info/top_level.txt
+Higgs_challenge/HiggsBosonChallenge.ipynb
+Higgs_challenge/README.md
+Higgs_challenge/higgs.csv.gz

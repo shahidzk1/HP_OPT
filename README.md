@@ -11,4 +11,8 @@
     - Run [the notebook](https://github.com/shahidzk1/Machine_learning/blob/main/Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb)
 
 ```diff
- - text in red 
+- text in red
++ text in green
+! text in orange
+# text in gray
+@@ text in purple (and bold)@@

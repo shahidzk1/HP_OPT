@@ -1,6 +1,6 @@
 # Machine Learning
 - This repository contains various projects which have been solved with the help of machine learning
-- This [link](https://github.com/shahidzk1/Machine_learning/blob/main/HP_OPT_class/HP_OPT_class_code.py) has a class that uses Optuna package to optimize the hyperparameters of MLP, XGB, CNN using the TPE algorithm.
+- This [```diff - text in red link](https://github.com/shahidzk1/Machine_learning/blob/main/HP_OPT_class/HP_OPT_class_code.py) has a class that uses Optuna package to optimize the hyperparameters of MLP, XGB, CNN using the TPE algorithm.
 
 ## Higgs Boson Challenge
   - The [class](https://github.com/shahidzk1/Machine_learning/blob/main/HP_OPT_class/HP_OPT_class_code.py) was created to be used for the hyperparameters optimization in the [google colab](https://colab.research.google.com/drive/1I4HS7SZduw426C-YuxboArrfI9QiT6OV?usp=sharing)

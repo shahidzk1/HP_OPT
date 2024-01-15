@@ -7,8 +7,8 @@
   - The colab uses different ML algorithms for the higgs selection from the background and the data comes from the [HiggsChallenge](https://www.kaggle.com/competitions/higgs-boson/data)
   - The offline notebook is available at the [link](https://github.com/shahidzk1/HP_OPT/blob/main/Higgs_challenge/HiggsBosonChallenge.ipynb)
   - If you want to run it on your personal computer e.g. on Visual studio then
-  - Clone the repository:
+  -- Clone the repository:
       ```
       git clone https://github.com/shahidzk1/Machine_learning.git
       ```
-  - Run [the notebook](https://github.com/shahidzk1/Machine_learning/blob/main/Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb)
+  -- Run [the notebook](https://github.com/shahidzk1/Machine_learning/blob/main/Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb)

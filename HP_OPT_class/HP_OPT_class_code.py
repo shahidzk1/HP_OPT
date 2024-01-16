@@ -75,7 +75,7 @@ class HP_OPT:
         self.epochs = n_epochs
         self.input_shape = (self.X_train.shape[1],)
         
-    def keras_objective(self, trial):
+    def MLP_objective(self, trial):
         """"
         This method takes the hyperparameters of the MLP, creates a model and then trains and tests the model 
         """

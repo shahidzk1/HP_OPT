@@ -1,4 +1,4 @@
-python>=3.6
+python>=3.1
 numpy>=1.23
 pandas>=1.5
 # Machine learning libraries

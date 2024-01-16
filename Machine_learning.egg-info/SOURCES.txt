@@ -23,3 +23,4 @@ Machine_learning.egg-info/SOURCES.txt
 Machine_learning.egg-info/dependency_links.txt
 Machine_learning.egg-info/top_level.txt
 dist/HP_OPT_class-0.1.0-py3.8.egg
+dist/Machine_learning-0.1.0-py3.8.egg

@@ -76,9 +76,9 @@ class HP_OPT:
         self.input_shape = (self.X_train.shape[1],)
         
     def keras_objective(self, trial):
-        '''
+        """"
         This method takes the hyperparameters of the MLP, creates a model and then trains and tests the model 
-        '''
+        """
       le = LabelEncoder()
       Y_train_encoded = le.fit_transform(self.Y_train)
       Y_valid_encoded = le.transform(self.Y_valid)
@@ -108,9 +108,9 @@ class HP_OPT:
       return score[1]
 
     def xgboost_objective(self, trial):
-        '''
+        """"
         This method takes the hyperparameters of the XGBoost, creates a model and then trains and tests the model 
-        '''
+        """
         param = {
             'booster': 'gbtree',
             "n_estimators": trial.suggest_int("n_estimators", self.xgb_hyp_para['n_estimators'][0], self.xgb_hyp_para['n_estimators'][1], step=10),
@@ -129,9 +129,9 @@ class HP_OPT:
         return auc_mean
 
     def cnn_objective(self, trial):
-        '''
+        """"
         This method takes the hyperparameters of the CNN, creates a model and then trains and tests the model 
-        '''
+        """
       input_shape = (self.X_train.shape[1], 1)
       scaler = StandardScaler()
       X_train = scaler.fit_transform(self.X_train)
@@ -189,9 +189,9 @@ class HP_OPT:
       return score[1]
 
     def create_transformer_model(self, input_dim, num_classes, d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization):
-        '''
+        """"
         This method takes the hyperparameters of the transformer, creates a model and then trains and tests the model 
-        '''
+        """
       d_model = int(np.ceil(d_model / num_heads) * num_heads)
       class TabularTransformer(nn.Module):
         def __init__(self):

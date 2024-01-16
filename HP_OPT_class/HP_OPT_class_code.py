@@ -79,33 +79,33 @@ class HP_OPT:
         """"
         This method takes the hyperparameters of the MLP, creates a model and then trains and tests the model 
         """
-      le = LabelEncoder()
-      Y_train_encoded = le.fit_transform(self.Y_train)
-      Y_valid_encoded = le.transform(self.Y_valid)
-      Y_train_new = to_categorical(Y_train_encoded)
-      Y_valid_new = to_categorical(Y_valid_encoded)
-      n_layers = trial.suggest_int("n_layers", self.mlp_hyp_par['n_layers'][0], self.mlp_hyp_par['n_layers'][1])
-      model = Sequential()
-      model.add(tf.keras.layers.Flatten(input_shape=(self.X_train.shape[1],)))
-      for i in range(n_layers):
+        le = LabelEncoder()
+        Y_train_encoded = le.fit_transform(self.Y_train)
+        Y_valid_encoded = le.transform(self.Y_valid)
+        Y_train_new = to_categorical(Y_train_encoded)
+        Y_valid_new = to_categorical(Y_valid_encoded)
+        n_layers = trial.suggest_int("n_layers", self.mlp_hyp_par['n_layers'][0], self.mlp_hyp_par['n_layers'][1])
+        model = Sequential()
+        model.add(tf.keras.layers.Flatten(input_shape=(self.X_train.shape[1],)))
+        for i in range(n_layers):
           num_hidden = trial.suggest_int("n_units_l{}".format(i), self.mlp_hyp_par['n_units'][0], self.mlp_hyp_par['n_units'][1], log=True)
           model.add(tf.keras.layers.Dense(num_hidden, activation="relu"))
-      model.add(tf.keras.layers.Dense(self.num_classes, activation=tf.nn.softmax))
-      learning_rate = trial.suggest_float("learning_rate", self.mlp_hyp_par['learning_rate'][0], self.mlp_hyp_par['learning_rate'][1], log=True)
-      model.compile(
+        model.add(tf.keras.layers.Dense(self.num_classes, activation=tf.nn.softmax))
+        learning_rate = trial.suggest_float("learning_rate", self.mlp_hyp_par['learning_rate'][0], self.mlp_hyp_par['learning_rate'][1], log=True)
+        model.compile(
           loss=tf.keras.losses.CategoricalCrossentropy(),
           optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
           metrics=tf.keras.metrics.AUC(),
-      )
-      tf.keras.backend.clear_session()
-      model.fit(self.X_train, Y_train_new, batch_size=self.batch_size,
+        )
+        tf.keras.backend.clear_session()
+        model.fit(self.X_train, Y_train_new, batch_size=self.batch_size,
           callbacks=[optuna.integration.TFKerasPruningCallback(trial, "val_auc"), MyCustomCallback()],
           epochs=self.epochs,
           validation_split=0.1,
           verbose=1
-      )
-      score = model.evaluate(self.X_valid, Y_valid_new, verbose=0)
-      return score[1]
+        )
+        score = model.evaluate(self.X_valid, Y_valid_new, verbose=0)
+        return score[1]
 
     def xgboost_objective(self, trial):
         """"
@@ -132,25 +132,25 @@ class HP_OPT:
         """"
         This method takes the hyperparameters of the CNN, creates a model and then trains and tests the model 
         """
-      input_shape = (self.X_train.shape[1], 1)
-      scaler = StandardScaler()
-      X_train = scaler.fit_transform(self.X_train)
-      X_valid = scaler.transform(self.X_valid)
-      X_train = self.X_train.to_numpy().reshape(self.X_train.shape[0], self.X_train.shape[1], 1)
-      X_valid = self.X_valid.to_numpy().reshape(self.X_valid.shape[0], self.X_valid.shape[1], 1)
-      clear_session()
-
-      model = Sequential()
-      model.add(
+        input_shape = (self.X_train.shape[1], 1)
+        scaler = StandardScaler()
+        X_train = scaler.fit_transform(self.X_train)
+        X_valid = scaler.transform(self.X_valid)
+        X_train = self.X_train.to_numpy().reshape(self.X_train.shape[0], self.X_train.shape[1], 1)
+        X_valid = self.X_valid.to_numpy().reshape(self.X_valid.shape[0], self.X_valid.shape[1], 1)
+        clear_session()
+        
+        model = Sequential()
+        model.add(
           Conv1D(
               filters=trial.suggest_categorical("filters", self.cnn_hyp_par['filters']),
               kernel_size=trial.suggest_categorical("kernel_size", self.cnn_hyp_par['kernel_size']),
               strides=trial.suggest_categorical("strides", self.cnn_hyp_par['strides']),
               activation="linear", input_shape=input_shape, name=f'conv1d_{trial.number}' ,
           )
-      )
-      n_conv_layers = trial.suggest_int("n_conv_layers", self.cnn_hyp_par['n_conv_layers_min'], self.cnn_hyp_par['n_conv_layers_max'])
-      for i in range(n_conv_layers - 1):
+        )
+        n_conv_layers = trial.suggest_int("n_conv_layers", self.cnn_hyp_par['n_conv_layers_min'], self.cnn_hyp_par['n_conv_layers_max'])
+        for i in range(n_conv_layers - 1):
           model.add(
               Conv1D(
                   filters=trial.suggest_categorical("filters", self.cnn_hyp_par['filters']),
@@ -161,32 +161,32 @@ class HP_OPT:
           )
           dropout_rate = trial.suggest_float("conv_dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
           model.add(Dropout(dropout_rate))
-      model.add(Flatten())
-      n_layers = trial.suggest_int("n_layers", self.cnn_hyp_par['n_layers_min'], self.cnn_hyp_par['n_layers_max'])
-      for i in range(n_layers):
+        model.add(Flatten())
+        n_layers = trial.suggest_int("n_layers", self.cnn_hyp_par['n_layers_min'], self.cnn_hyp_par['n_layers_max'])
+        for i in range(n_layers):
           num_hidden = trial.suggest_int("n_units_l{}".format(i), self.cnn_hyp_par['n_units_min'], self.cnn_hyp_par['n_units_max'], log=True)
           model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001),name=f'dense_{trial.number}_layer_{i}'))
           dropout_rate = trial.suggest_float("dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
           model.add(Dropout(dropout_rate))
           model.add(BatchNormalization())
-      model.add(Dense(self.num_classes, activation="softmax"))
-      learning_rate = trial.suggest_float("learning_rate", self.cnn_hyp_par['learning_rate_min'], self.cnn_hyp_par['learning_rate_max'], log=True)
-      model.compile(
+        model.add(Dense(self.num_classes, activation="softmax"))
+        learning_rate = trial.suggest_float("learning_rate", self.cnn_hyp_par['learning_rate_min'], self.cnn_hyp_par['learning_rate_max'], log=True)
+        model.compile(
           loss="sparse_categorical_crossentropy",
           optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),  # Use tf.keras.optimizers
           metrics=["accuracy"],
-      )
-      early_stop = EarlyStopping(monitor='val_loss', patience=3)
-      #reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.001)
-      model.fit(
+        )
+        early_stop = EarlyStopping(monitor='val_loss', patience=3)
+        #reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0.001)
+        model.fit(
             X_train, self.Y_train, validation_data=(X_valid, self.Y_valid),
             shuffle=True, batch_size=self.batch_size,
             epochs=self.epochs, verbose=False, callbacks=[early_stop]
         )
-      score = model.evaluate(X_valid, self.Y_valid, verbose=0)
-      print(f"Trial {trial.number}, Score: {score[1]}")
-      print(f"Parameters: {trial.params}")
-      return score[1]
+        score = model.evaluate(X_valid, self.Y_valid, verbose=0)
+        print(f"Trial {trial.number}, Score: {score[1]}")
+        print(f"Parameters: {trial.params}")
+        return score[1]
 
     def create_transformer_model(self, input_dim, num_classes, d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization):
         """"

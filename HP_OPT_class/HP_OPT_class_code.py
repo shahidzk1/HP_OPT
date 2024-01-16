@@ -1,3 +1,6 @@
+# The code has been written using the guidlines "https://peps.python.org/pep-0008/"  e.g. 4 spaces are used for indentation,
+# a blank line will separate classes and functions, and spaces are put around commas and operators etc.
+
 import tensorflow as tf
 from tensorflow.keras.layers import Conv1D, Flatten, Dense, Dropout, BatchNormalization
 from tensorflow.keras.optimizers import Adam
@@ -75,7 +78,7 @@ class HP_OPT:
         self.epochs = n_epochs
         self.input_shape = (self.X_train.shape[1],)
         
-    def MLP_objective(self, trial):
+    def mlp_objective(self, trial):
         """"
         This method takes the hyperparameters of the MLP, creates a model and then trains and tests the model 
         """
@@ -86,7 +89,7 @@ class HP_OPT:
         Y_valid_new = to_categorical(Y_valid_encoded)
         n_layers = trial.suggest_int("n_layers", self.mlp_hyp_par['n_layers'][0], self.mlp_hyp_par['n_layers'][1])
         model = Sequential()
-        model.add(tf.keras.layers.Flatten(input_shape=(self.X_train.shape[1],)))
+        model.add(tf.keras.layers.Flatten(input_shape=(self.X_train.shape[1], )))
         for i in range(n_layers):
           num_hidden = trial.suggest_int("n_units_l{}".format(i), self.mlp_hyp_par['n_units'][0], self.mlp_hyp_par['n_units'][1], log=True)
           model.add(tf.keras.layers.Dense(num_hidden, activation="relu"))
@@ -146,7 +149,7 @@ class HP_OPT:
               filters=trial.suggest_categorical("filters", self.cnn_hyp_par['filters']),
               kernel_size=trial.suggest_categorical("kernel_size", self.cnn_hyp_par['kernel_size']),
               strides=trial.suggest_categorical("strides", self.cnn_hyp_par['strides']),
-              activation="linear", input_shape=input_shape, name=f'conv1d_{trial.number}' ,
+              activation="linear", input_shape=input_shape, name=f'conv1d_{trial.number}',
           )
         )
         n_conv_layers = trial.suggest_int("n_conv_layers", self.cnn_hyp_par['n_conv_layers_min'], self.cnn_hyp_par['n_conv_layers_max'])
@@ -292,7 +295,7 @@ class HP_OPT:
         study = optuna.create_study(direction="maximize", pruner=optuna.pruners.SuccessiveHalvingPruner(), sampler=optuna.samplers.TPESampler())
 
         if model_type == "MLP":
-            study.optimize(self.MLP_objective, n_trials=self.n_trials, gc_after_trial=True)
+            study.optimize(self.mlp_objective, n_trials=self.n_trials, gc_after_trial=True)
             print("MLP Best Trial:")
         elif model_type == "xgboost":
             study.optimize(self.xgboost_objective, n_trials=self.n_trials, gc_after_trial=True)

@@ -151,24 +151,24 @@ class HP_OPT:
         )
         n_conv_layers = trial.suggest_int("n_conv_layers", self.cnn_hyp_par['n_conv_layers_min'], self.cnn_hyp_par['n_conv_layers_max'])
         for i in range(n_conv_layers - 1):
-          model.add(
-              Conv1D(
+            model.add(
+                Conv1D(
                   filters=trial.suggest_categorical("filters", self.cnn_hyp_par['filters']),
                   kernel_size=trial.suggest_categorical("kernel_size", self.cnn_hyp_par['kernel_size']),
                   strides=trial.suggest_categorical("strides", self.cnn_hyp_par['strides']),
                   activation="linear",  name=f'conv1d_{trial.number}_layer_{i}',
               )
-          )
-          dropout_rate = trial.suggest_float("conv_dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
-          model.add(Dropout(dropout_rate))
+            )
+            dropout_rate = trial.suggest_float("conv_dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
+            model.add(Dropout(dropout_rate))
         model.add(Flatten())
         n_layers = trial.suggest_int("n_layers", self.cnn_hyp_par['n_layers_min'], self.cnn_hyp_par['n_layers_max'])
-        for i in range(n_layers):
-          num_hidden = trial.suggest_int("n_units_l{}".format(i), self.cnn_hyp_par['n_units_min'], self.cnn_hyp_par['n_units_max'], log=True)
-          model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001),name=f'dense_{trial.number}_layer_{i}'))
-          dropout_rate = trial.suggest_float("dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
-          model.add(Dropout(dropout_rate))
-          model.add(BatchNormalization())
+        for i in range(n_layers):  
+            num_hidden = trial.suggest_int("n_units_l{}".format(i), self.cnn_hyp_par['n_units_min'], self.cnn_hyp_par['n_units_max'], log=True)
+            model.add(Dense(num_hidden, activation="relu", activity_regularizer=l1(0.001),name=f'dense_{trial.number}_layer_{i}'))
+            dropout_rate = trial.suggest_float("dropout_rate_l{}".format(i), self.cnn_hyp_par['dropout_min'], self.cnn_hyp_par['dropout_max'])
+            model.add(Dropout(dropout_rate))
+            model.add(BatchNormalization())
         model.add(Dense(self.num_classes, activation="softmax"))
         learning_rate = trial.suggest_float("learning_rate", self.cnn_hyp_par['learning_rate_min'], self.cnn_hyp_par['learning_rate_max'], log=True)
         model.compile(
@@ -189,7 +189,6 @@ class HP_OPT:
         return score[1]
 
     def create_transformer_model(self, input_dim, num_classes, d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization):
-        
         """"
         This method takes the hyperparameters of the transformer, creates a model and then trains and tests the model 
         """
@@ -239,7 +238,7 @@ class HP_OPT:
         learning_rate = trial.suggest_float('learning_rate', *self.transformer_hyp_par['learning_rate'], log=True)
         
         if d_model % num_heads != 0:
-          return 1000.0
+            return 1000.0
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model = self.create_transformer_model(self.input_shape[0], len(np.unique(self.y_train)), d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization).to(device)
         optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
@@ -250,36 +249,34 @@ class HP_OPT:
         best_validation_loss = float('inf')
         epochs_without_improvement = 0
         
-        for epoch in range(10):
-          running_loss = 0.0
-          for i, data in enumerate(train_loader):
-              inputs, labels = data[0].to(device), data[1].to(device)
-              optimizer.zero_grad()
-              with amp.autocast():
-                  outputs, l1_loss = model(inputs)
-                  loss = criterion(outputs, labels) + l1_loss
-        
-              scaler.scale(loss).backward()
-              scaler.step(optimizer)
-              scaler.update()
-        
-              running_loss += loss.item()
-        
-          validation_loss = 0.0
-          with torch.no_grad():
-              for data in valid_loader:
-                  inputs, labels = data[0].to(device), data[1].to(device)
-                  outputs, _ = model(inputs)
-                  loss = criterion(outputs, labels)
-                  validation_loss += loss.item()
-          scheduler.step(validation_loss)
-          if validation_loss < best_validation_loss:
-              best_validation_loss = validation_loss
-              epochs_without_improvement = 0
-          else:
-              epochs_without_improvement += 1
-          if epochs_without_improvement > 10:
-              break
+        for epoch in range(0,self.epochs):
+            running_loss = 0.0
+            for i, data in enumerate(train_loader):
+                inputs, labels = data[0].to(device), data[1].to(device)
+                optimizer.zero_grad()
+                with amp.autocast():
+                    outputs, l1_loss = model(inputs)
+                    loss = criterion(outputs, labels) + l1_loss
+                scaler.scale(loss).backward()
+                scaler.step(optimizer)
+                scaler.update()
+                running_loss += loss.item()
+            
+            validation_loss = 0.0
+            with torch.no_grad():
+                for data in valid_loader:
+                    inputs, labels = data[0].to(device), data[1].to(device)
+                    outputs, _ = model(inputs)
+                    loss = criterion(outputs, labels)
+                    validation_loss += loss.item()
+            scheduler.step(validation_loss)
+            if validation_loss < best_validation_loss:
+                best_validation_loss = validation_loss
+                epochs_without_improvement = 0
+            else:
+                epochs_without_improvement += 1
+            if epochs_without_improvement > 10:
+                break
         return validation_loss
 
     def optimize_transformer(self):
@@ -292,22 +289,22 @@ class HP_OPT:
         return study
 
     def optimize(self, model_type):
-      study = optuna.create_study(direction="maximize", pruner=optuna.pruners.SuccessiveHalvingPruner(), sampler=optuna.samplers.TPESampler())
+        study = optuna.create_study(direction="maximize", pruner=optuna.pruners.SuccessiveHalvingPruner(), sampler=optuna.samplers.TPESampler())
 
-      if model_type == "MLP":
-          study.optimize(self.MLP_objective, n_trials=self.n_trials, gc_after_trial=True)
-          print("MLP Best Trial:")
-      elif model_type == "xgboost":
-          study.optimize(self.xgboost_objective, n_trials=self.n_trials, gc_after_trial=True)
-          print("XGBoost Best Trial:")
-      elif model_type == "cnn":
-          study.optimize(self.cnn_objective, n_trials=self.n_trials, gc_after_trial=True)
-          print("CNN Best Trial:")
-      elif model_type == "transformer":
-          if self.transformer_hyp_par is None:
-              raise ValueError("Hyperparameters for Transformer model are missing.")
-          study.optimize(lambda trial: self.transformer_objective(trial), n_trials=self.n_trials, gc_after_trial=True)
-          print("Transformer Best Trial:")
-      else:
-          raise ValueError("Invalid model_type. Choose 'MLP', 'xgboost', 'cnn', or 'transformer'.")
-      return study
+        if model_type == "MLP":
+            study.optimize(self.MLP_objective, n_trials=self.n_trials, gc_after_trial=True)
+            print("MLP Best Trial:")
+        elif model_type == "xgboost":
+            study.optimize(self.xgboost_objective, n_trials=self.n_trials, gc_after_trial=True)
+            print("XGBoost Best Trial:")
+        elif model_type == "cnn":
+            study.optimize(self.cnn_objective, n_trials=self.n_trials, gc_after_trial=True)
+            print("CNN Best Trial:")
+        elif model_type == "transformer":
+            if self.transformer_hyp_par is None:
+                raise ValueError("Hyperparameters for Transformer model are missing.")
+            study.optimize(lambda trial: self.transformer_objective(trial), n_trials=self.n_trials, gc_after_trial=True)
+            print("Transformer Best Trial:")
+        else:
+            raise ValueError("Invalid model_type. Choose 'MLP', 'xgboost', 'cnn', or 'transformer'.")
+        return study

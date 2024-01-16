@@ -39,7 +39,9 @@ class HP_OPT:
         This class can be used to optimize the hyperparameters of different machine learning algorithms such as multi-layer perception, XGboost, Convolutional neural network (1D),
         and transformers for the classification of tabular data.
         
-        Use case: hp_optimizer = HP_OPT(x_train, y_train, batch_size=32, n_trials=10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None)
+        Use case: 
+        hp_optimizer = HP_OPT(x_train, y_train, batch_size=32, n_trials=10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None)
+        study_keras = hp_optimizer.optimize("keras")
         
         Args:
             x_train                (pandas.core.frame.DataFrame)    : Should contain variables for training
@@ -72,7 +74,11 @@ class HP_OPT:
         self.X_train, self.X_valid, self.Y_train, self.Y_valid = train_test_split( x_train, y_train, test_size=0.2, random_state=324, stratify=y_train )
         self.epochs = n_epochs
         self.input_shape = (self.X_train.shape[1],)
+        
     def keras_objective(self, trial):
+        '''
+        This method takes the hyperparameters of the MLP, creates a model and then trains and tests the model 
+        '''
       le = LabelEncoder()
       Y_train_encoded = le.fit_transform(self.Y_train)
       Y_valid_encoded = le.transform(self.Y_valid)
@@ -102,6 +108,9 @@ class HP_OPT:
       return score[1]
 
     def xgboost_objective(self, trial):
+        '''
+        This method takes the hyperparameters of the XGBoost, creates a model and then trains and tests the model 
+        '''
         param = {
             'booster': 'gbtree',
             "n_estimators": trial.suggest_int("n_estimators", self.xgb_hyp_para['n_estimators'][0], self.xgb_hyp_para['n_estimators'][1], step=10),
@@ -120,6 +129,9 @@ class HP_OPT:
         return auc_mean
 
     def cnn_objective(self, trial):
+        '''
+        This method takes the hyperparameters of the CNN, creates a model and then trains and tests the model 
+        '''
       input_shape = (self.X_train.shape[1], 1)
       scaler = StandardScaler()
       X_train = scaler.fit_transform(self.X_train)
@@ -177,6 +189,9 @@ class HP_OPT:
       return score[1]
 
     def create_transformer_model(self, input_dim, num_classes, d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization):
+        '''
+        This method takes the hyperparameters of the transformer, creates a model and then trains and tests the model 
+        '''
       d_model = int(np.ceil(d_model / num_heads) * num_heads)
       class TabularTransformer(nn.Module):
         def __init__(self):
@@ -279,9 +294,9 @@ class HP_OPT:
     def optimize(self, model_type):
       study = optuna.create_study(direction="maximize", pruner=optuna.pruners.SuccessiveHalvingPruner(), sampler=optuna.samplers.TPESampler())
 
-      if model_type == "keras":
-          study.optimize(self.keras_objective, n_trials=self.n_trials, gc_after_trial=True)
-          print("Keras Best Trial:")
+      if model_type == "MLP":
+          study.optimize(self.MLP_objective, n_trials=self.n_trials, gc_after_trial=True)
+          print("MLP Best Trial:")
       elif model_type == "xgboost":
           study.optimize(self.xgboost_objective, n_trials=self.n_trials, gc_after_trial=True)
           print("XGBoost Best Trial:")
@@ -294,5 +309,5 @@ class HP_OPT:
           study.optimize(lambda trial: self.transformer_objective(trial), n_trials=self.n_trials, gc_after_trial=True)
           print("Transformer Best Trial:")
       else:
-          raise ValueError("Invalid model_type. Choose 'keras', 'xgboost', 'cnn', or 'transformer'.")
+          raise ValueError("Invalid model_type. Choose 'MLP', 'xgboost', 'cnn', or 'transformer'.")
       return study

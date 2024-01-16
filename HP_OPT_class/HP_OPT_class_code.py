@@ -189,30 +189,30 @@ class HP_OPT:
         return score[1]
 
     def create_transformer_model(self, input_dim, num_classes, d_model, num_heads, num_layers, dropout, weight_decay, l1_regularization):
+        
         """"
         This method takes the hyperparameters of the transformer, creates a model and then trains and tests the model 
         """
-      d_model = int(np.ceil(d_model / num_heads) * num_heads)
-      class TabularTransformer(nn.Module):
-        def __init__(self):
-          super(TabularTransformer, self).__init__()
-          self.embedding = nn.Linear(input_dim, d_model)
-          self.embedding_dropout = nn.Dropout(dropout)
-          self.transformer_layers = nn.ModuleList([
+        d_model = int(np.ceil(d_model / num_heads) * num_heads)
+        class TabularTransformer(nn.Module):
+            def __init__(self):
+                super(TabularTransformer, self).__init__()
+                self.embedding = nn.Linear(input_dim, d_model)
+                self.embedding_dropout = nn.Dropout(dropout)
+                self.transformer_layers = nn.ModuleList([
               nn.TransformerEncoderLayer(d_model, num_heads, dim_feedforward=2 * d_model, dropout=dropout)
-              for _ in range(num_layers)
-          ])
-          self.classifier = nn.Linear(d_model, num_classes)
-          self.weight_decay = weight_decay
-          self.l1_regularization = l1_regularization
-        def forward(self, x):
-          x = self.embedding(x)
-          x = self.embedding_dropout(x)
-          for layer in self.transformer_layers:
-              x = layer(x)
-          x = self.classifier(x)
-          return F.log_softmax(x, dim=1), self.l1_regularization * torch.norm(self.embedding.weight.data, 1)
-      return TabularTransformer()
+              for _ in range(num_layers)])
+                self.classifier = nn.Linear(d_model, num_classes)
+                self.weight_decay = weight_decay
+                self.l1_regularization = l1_regularization
+            def forward(self, x):
+                x = self.embedding(x)
+                x = self.embedding_dropout(x)
+                for layer in self.transformer_layers:
+                    x = layer(x)
+                    x = self.classifier(x)
+                    return F.log_softmax(x, dim=1), self.l1_regularization * torch.norm(self.embedding.weight.data, 1)
+        return TabularTransformer()
 
     def transformer_objective(self, trial):
         num_workers = 2

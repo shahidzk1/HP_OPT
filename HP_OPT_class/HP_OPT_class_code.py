@@ -296,8 +296,8 @@ class HP_OPT:
         This method will start the optimization process of the hyperparameters for the 4 algorithms
 
         Args:
-            model_type                (string)    : Should be one from the list "mlp", "xgboost", "cnn", "transformer"
-            sampler                               : should be a sampler from optuna
+            model_type          (string)              : Should be one from the list "mlp", "xgboost", "cnn", "transformer"
+            sampler             (optuna.samplers)     : should be a sampler from optuna
 
         """
         sampling_algorithm = sampler or optuna.samplers.TPESampler()
@@ -318,5 +318,5 @@ class HP_OPT:
             study.optimize(lambda trial: self.transformer_objective(trial), n_trials=self.n_trials, gc_after_trial=True)
             print("Transformer Best Trial:")
         else:
-            raise ValueError("Invalid model_type. Choose 'MLP', 'xgboost', 'cnn', or 'transformer'.")
+            raise ValueError("Invalid model_type. Choose 'mlp', 'xgboost', 'cnn', or 'transformer'.")
         return study

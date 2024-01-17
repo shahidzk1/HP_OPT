@@ -297,6 +297,7 @@ class HP_OPT:
 
         Args:
             model_type                (string)    : Should be one from the list "mlp", "xgboost", "cnn", "transformer"
+            sampler                               : should be a sampler from optuna
 
         """
         sampling_algorithm = sampler or optuna.samplers.TPESampler()

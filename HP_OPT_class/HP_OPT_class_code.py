@@ -291,10 +291,18 @@ class HP_OPT:
         print(study.best_trial.params)
         return study
 
-    def optimize(self, model_type):
-        study = optuna.create_study(direction="maximize", pruner=optuna.pruners.SuccessiveHalvingPruner(), sampler=optuna.samplers.TPESampler())
+    def optimize(self, model_type, sampler=None):
+        """"
+        This method will start the optimization process of the hyperparameters for the 4 algorithms
 
-        if model_type == "MLP":
+        Args:
+            model_type                (string)    : Should be one from the list "mlp", "xgboost", "cnn", "transformer"
+
+        """
+        sampling_algorithm = sampler or optuna.samplers.TPESampler()
+        study = optuna.create_study(direction="maximize", pruner=optuna.pruners.SuccessiveHalvingPruner(), sampler=sampling_algorithm)
+
+        if model_type == "mlp":
             study.optimize(self.mlp_objective, n_trials=self.n_trials, gc_after_trial=True)
             print("MLP Best Trial:")
         elif model_type == "xgboost":

@@ -36,7 +36,7 @@ class MyCustomCallback(tf.keras.callbacks.Callback):
         tf.keras.backend.clear_session()
         gc.collect()
 
-class HP_OPT:
+class HPOpt:
     def __init__(self, x_train, y_train, batch_size=32, n_trials=10, n_epochs =10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None):
         """"
         This class can be used to optimize the hyperparameters of different machine learning algorithms such as multi-layer perception, XGboost, Convolutional neural network (1D),

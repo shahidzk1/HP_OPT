@@ -43,7 +43,7 @@ class HPOpt:
         and transformers for the classification of tabular data.
         
         Use case: 
-        hp_optimizer = HP_OPT(x_train, y_train, batch_size=32, n_trials=10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None)
+        hp_optimizer = HPOpt(x_train, y_train, batch_size=32, n_trials=10, mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None, transformer_hyp_par=None, num_classes=None)
         study_keras = hp_optimizer.optimize("keras")
         
         Args:

@@ -169,7 +169,7 @@ class HPOpt:
             "max_depth": trial.suggest_int("max_depth",
                                            self.xgb_hyp_para['max_depth'][0],
                                            self.xgb_hyp_para['max_depth'][1]),
-            'objective': 'multi:softproba',
+            'objective': 'multi:softprob',
             'num_class': len(np.unique(self.y_train)),
         }
         clf = XGBClassifier(**param, tree_method=self.tree_method_xgb)

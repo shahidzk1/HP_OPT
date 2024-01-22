@@ -16,9 +16,9 @@
     - cd /directory/on/your/personal/computer/Machine_learning/HP_OPT_class/
     - For unit testing run
        - python [test_hp_opt_class_code.py](https://github.com/shahidzk1/Machine_learning/blob/main/HP_OPT_class/test_hp_opt_class_code.py)
-      It should end with
-      ```
-      Ran 4 tests in xs (x is time in sec)
-      OK
-      ```
+       - The output should end with
+          ```
+          Ran 4 tests in xs (x is time in sec)
+          OK
+          ```
     - Run [the notebook](https://github.com/shahidzk1/Machine_learning/blob/main/Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb)

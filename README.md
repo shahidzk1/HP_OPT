@@ -14,7 +14,7 @@
       git clone https://github.com/shahidzk1/Machine_learning.git
       ```
     - cd /directory/on/your/personal/computer/Machine_learning/HP_OPT_class/
-    - Run the unittest file by
+    - For unit testing run the following
       python [test_hp_opt_class_code.py](https://github.com/shahidzk1/Machine_learning/blob/main/HP_OPT_class/test_hp_opt_class_code.py)
       It should end with
       ```

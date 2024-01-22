@@ -38,7 +38,7 @@ class MyCustomCallback(tf.keras.callbacks.Callback):
         gc.collect()
 
 class HPOpt:
-    def __init__(self, x_train, y_train, batch_size=32, n_trials=10, n_epochs =10,
+    def __init__(self, x_train, y_train, batch_size=None, n_trials=None, n_epochs =None,
                   mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None,
                     transformer_hyp_par=None, num_classes=None):
         """"
@@ -66,8 +66,9 @@ class HPOpt:
         self.x_train = x_train
         self.y_train = y_train
         self.num_classes = num_classes
-        self.batch_size = batch_size
-        self.n_trials = n_trials
+        self.batch_size = batch_size or 1024
+        self.epochs = n_epochs or 10
+        self.n_trials = n_trials or 10
         #The default hyperparameters are given here
         self.mlp_hyp_par = mlp_hyp_par or { 'n_layers': (2, 22),
                                            'n_units': (2500, 4500),
@@ -101,7 +102,6 @@ class HPOpt:
                                                                                    test_size=0.2,
                                                                                    random_state=324,
                                                                                    stratify=y_train)
-        self.epochs = n_epochs
         self.input_shape = (self.X_train.shape[1],)
 
     def mlp_objective(self, trial):

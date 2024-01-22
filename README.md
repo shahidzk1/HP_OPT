@@ -7,12 +7,13 @@
   - The colab uses the above 4 different ML algorithms for the Higgs selection from the background and the data comes from the [HiggsChallenge](https://www.kaggle.com/competitions/higgs-boson/data)
     - The colab also shows the inner workings of the ML model by using the Shapley score using the SHAP library. The SHAP method fits a simplified model on the ML model locally. The contribution of an individual variable is the difference between its presence and absence while predicting a label for a class.
   - The offline notebook is available at the [link](https://github.com/shahidzk1/HP_OPT/blob/main/Higgs_challenge/HiggsBosonChallenge.ipynb)
-  - If you want to run it on your personal computer e.g. on Visual Studio then
+  - If you want to run it on your personal computer e.g. on Visual Studio or terminal then
+  - cd /directory/on/your/personal/computer
     - Clone the repository:
       ```
-      https://github.com/shahidzk1/Machine_learning.git
+      git clone https://github.com/shahidzk1/Machine_learning.git
       ```
-    
-    - Run the unittest by
-      python [test_hp_opt_class_code.py](https://github.com/shahidzk1/Machine_learning/blob/main/build/lib/HP_OPT_class/test_hp_opt_class_code.py)
+    - cd /directory/on/your/personal/computer/Machine_learning/HP_OPT_class/
+    - Run the unittest file by
+      python test_hp_opt_class_code.py
     - Run [the notebook](https://github.com/shahidzk1/Machine_learning/blob/main/Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb)

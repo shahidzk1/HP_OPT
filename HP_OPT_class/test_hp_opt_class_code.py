@@ -6,7 +6,9 @@ from HP_OPT_class_code import HPOpt
 
 class TestHPOptClass(unittest.TestCase):
     def setUp(self):
-        data = pd.read_csv('/home/shahid/ML/Machine_learning/Higgs_challenge/testing.csv')
+        #change the path to your local directory
+        path = '/home/shahid/ML/Machine_learning/Higgs_challenge/testing.csv'
+        data = pd.read_csv(path)
         self.x_train = data.iloc[:, 0:-1]
         self.y_train_new = data.iloc[:, -1].replace({'s': 1, 'b': 0})
         self.y_train_new = self.y_train_new.replace('s', 1, regex=True)

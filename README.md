@@ -13,8 +13,6 @@
       https://github.com/shahidzk1/Machine_learning.git
       ```
     
-    - Run the test by
-      ```
+    - Run the unittest by
       python [test_hp_opt_class_code.py](https://github.com/shahidzk1/Machine_learning/blob/main/build/lib/HP_OPT_class/test_hp_opt_class_code.py)
-      ```
     - Run [the notebook](https://github.com/shahidzk1/Machine_learning/blob/main/Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb)

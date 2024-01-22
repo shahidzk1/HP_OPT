@@ -40,7 +40,7 @@ class MyCustomCallback(tf.keras.callbacks.Callback):
 class HPOpt:
     def __init__(self, x_train, y_train, batch_size=None, n_trials=None, n_epochs =None,
                   mlp_hyp_par=None, xgb_hyp_para=None, cnn_hyp_par=None,
-                    transformer_hyp_par=None, num_classes=None):
+                    transformer_hyp_par=None, num_classes=None, tree_method_xgb = None):
         """"
         This class can be used to optimize the hyperparameters of
         different machine learning algorithms such as multi-layer
@@ -69,6 +69,7 @@ class HPOpt:
         self.batch_size = batch_size or 1024
         self.epochs = n_epochs or 10
         self.n_trials = n_trials or 10
+        self.tree_method_xgb = tree_method_xgb or 'gpu_hist'
         #The default hyperparameters are given here
         self.mlp_hyp_par = mlp_hyp_par or { 'n_layers': (2, 22),
                                            'n_units': (2500, 4500),
@@ -77,7 +78,7 @@ class HPOpt:
                                               'alpha': (2, 30),
                                               'gamma': (0, 1),
                                               'learning_rate': (0.01, 1),
-                                              'max_depth': (0, 10) }
+                                              'max_depth': (0, 10)}
         self.cnn_hyp_par = cnn_hyp_par or {'filters': [32, 64],
                                             'kernel_size': [3, 5],
                                             'strides': [1, 2],
@@ -171,7 +172,7 @@ class HPOpt:
             'objective': 'multi:softmax',
             'num_class': len(np.unique(self.y_train)),
         }
-        clf = XGBClassifier(**param, tree_method='gpu_hist')
+        clf = XGBClassifier(**param, tree_method=self.tree_method_xgb)
         cv = StratifiedKFold(n_splits=3, shuffle=True, random_state=42)
         auc_scores = cross_val_score(clf, self.x_train,
                                      self.y_train, cv=cv,

@@ -1,6 +1,7 @@
 import unittest
 import pandas as pd
-from HP_OPT_class import HP_OPT_class_code, plot_tools
+from HP_OPT_class import plot_tools
+from HP_OPT_class_code import HPOpt
 
 class TestHPOptClass(unittest.TestCase):
     def setUp(self):
@@ -11,25 +12,25 @@ class TestHPOptClass(unittest.TestCase):
         pass
 
     def test_mlp_objective(self):
-        optimizer = HP_OPT_class_code.HPOpt(self.x_train, self.y_train_new)
+        optimizer = HPOpt(self.x_train, self.y_train_new)
         trial = optimizer.optimize("mlp").trials[0]
         self.assertIn('n_layers', trial.params)
         self.assertIn('learning_rate', trial.params)
 
     def test_xgboost_objective(self):
-        optimizer = HP_OPT_class_code.HPOpt(self.x_train, self.y_train_new)
+        optimizer = HPOpt(self.x_train, self.y_train_new)
         trial = optimizer.optimize("xgboost").trials[0]
         self.assertIn('n_estimators', trial.params)
         self.assertIn('alpha', trial.params)
 
     def test_cnn_objective(self):
-        optimizer = HP_OPT_class_code.HPOpt(self.x_train, self.y_train_new)
+        optimizer = HPOpt(self.x_train, self.y_train_new)
         trial = optimizer.optimize("cnn").trials[0]
         self.assertIn('filters', trial.params)
         self.assertIn('kernel_size', trial.params)
 
     def test_transformer_objective(self):
-        optimizer = HP_OPT_class_code.HPOpt(self.x_train, self.y_train_new)
+        optimizer = HPOpt(self.x_train, self.y_train_new)
         trial = optimizer.optimize("transformer").trials[0]
         self.assertIn('d_model', trial.params)
         self.assertIn('num_heads', trial.params)

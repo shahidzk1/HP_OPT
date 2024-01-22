@@ -19,6 +19,7 @@ Higgs_challenge/HiggsBosonChallenge.ipynb
 Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb
 Higgs_challenge/README.md
 Higgs_challenge/higgs.csv.gz
+Higgs_challenge/testing.csv
 Machine_learning.egg-info/PKG-INFO
 Machine_learning.egg-info/SOURCES.txt
 Machine_learning.egg-info/dependency_links.txt

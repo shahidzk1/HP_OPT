@@ -19,7 +19,6 @@ class TestHPOptClass(unittest.TestCase):
         trial = optimizer.optimize("xgboost").trials[0]
         self.assertIn('n_estimators', trial.params)
         self.assertIn('alpha', trial.params)
-        print("The XGBoost Optuna testing unit works well")
 
     def test_mlp_objective(self):
         keras_hyperparameters = {
@@ -32,7 +31,6 @@ class TestHPOptClass(unittest.TestCase):
         trial = optimizer.optimize("mlp").trials[0]
         self.assertIn('n_layers', trial.params)
         self.assertIn('learning_rate', trial.params)
-        print("The MLP Optuna testing unit works well")
     
     def test_cnn_objective(self):
         cnn_hyperparameters = {
@@ -56,7 +54,6 @@ class TestHPOptClass(unittest.TestCase):
         trial = optimizer.optimize("cnn").trials[0]
         self.assertIn('filters', trial.params)
         self.assertIn('kernel_size', trial.params)
-        print("The CNN Optuna testing unit works well")
 
     def test_transformer_objective(self):
         transformer_hyp_par = {'d_model': (64, 256),
@@ -76,7 +73,6 @@ class TestHPOptClass(unittest.TestCase):
         trial = optimizer.optimize("transformer").trials[0]
         self.assertIn('d_model', trial.params)
         self.assertIn('num_heads', trial.params)
-        print("The transformer Optuna testing unit works well")
 
 if __name__ == '__main__':
     unittest.main()

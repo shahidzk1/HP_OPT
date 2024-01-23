@@ -1,8 +1,8 @@
 import unittest
 import pandas as pd
 import numpy as np
-from HP_OPT_class import plot_tools
-from HP_OPT_class_code import HPOpt
+from src.HP_OPT_class.HP_OPT_class_code import HPOpt
+from src.plot_options import plot_tools
 
 class TestHPOptClass(unittest.TestCase):
     def setUp(self):

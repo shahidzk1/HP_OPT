@@ -13,7 +13,13 @@
       ```
       git clone https://github.com/shahidzk1/Machine_learning.git
       ```
-    - cd /directory/on/your/personal/computer/Machine_learning/HP_OPT_class/
+    - cd /directory/on/your/personal/computer/Machine_learning/
+      ```
+      git pull origin main
+      pip install -r requirements.txt
+      python setup.py install
+      ```
+    - cd /directory/on/your/personal/computer/Machine_learning/test/
     - For unit testing run
        - python [test_hp_opt_class_code.py](https://github.com/shahidzk1/Machine_learning/blob/main/HP_OPT_class/test_hp_opt_class_code.py)
        - The output should end with

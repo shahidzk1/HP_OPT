@@ -28,3 +28,10 @@
           OK
           ```
     - Run [the notebook](https://github.com/shahidzk1/Machine_learning/blob/main/Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb)
+### Azure Cloud
+ - Running on Azure cloud can lead to warnings about the scikit-learn version, which can be ignored.
+ - If optuna and optuna-integration packages are not found after requirements installation then simply use the following
+    ```
+          pip install optuna
+          pip install optuna-integration
+          ```

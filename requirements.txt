@@ -1,7 +1,7 @@
 numpy>=1.23
 pandas>=1.5
 # Machine learning libraries
-tensorflow>=2.14
+tensorflow>=2.2.0
 optuna>=3.4
 xgboost>=2.0.2
 sklearn>=1.2.2

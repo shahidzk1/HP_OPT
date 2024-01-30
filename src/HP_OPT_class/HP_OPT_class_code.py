@@ -420,7 +420,7 @@ class HPOpt:
         num_classes = self.num_classes
         input_shape = (self.X_train.shape[1], self.X_train.shape[2], self.X_train.shape[3])
         model = Sequential()
-        for i in range(num_conv_layers):
+        for i in range(num_conv_layers - 1):
             if i == 0:
                 model.add(
                     Conv2D(

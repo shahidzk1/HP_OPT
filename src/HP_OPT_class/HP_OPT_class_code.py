@@ -414,7 +414,7 @@ class HPOpt:
         kernel_size = trial.suggest_int("kernel_size",
                                             self.cnn_hyp_par['kernel_size'][0],
                                             self.cnn_hyp_par['kernel_size'][1])
-        dropout_rate = trial.suggest_float("conv_dropout_rate_l{}".format(i),
+        dropout_rate = trial.suggest_float("conv_dropout_rate",
                                                self.cnn_hyp_par['dropout_min'],
                                                self.cnn_hyp_par['dropout_max'])
         num_classes = self.num_classes

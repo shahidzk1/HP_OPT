@@ -4,7 +4,7 @@
 # commas and operators etc.
 # For static code analysis the code has been run with pylint
 import tensorflow as tf
-from tensorflow.keras.layers import Conv1D, Flatten, Dense, Dropout, BatchNormalization
+from tensorflow.keras.layers import Conv1D, Conv2D, MaxPooling2D, Flatten, Dense, Dropout, BatchNormalization
 from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.regularizers import l1
 from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
@@ -197,9 +197,9 @@ class HPOpt:
         model = Sequential()
         model.add(
           Conv1D(
-              filters=trial.suggest_categorical("filters", self.cnn_hyp_par['filters']),
-              kernel_size=trial.suggest_categorical("kernel_size", self.cnn_hyp_par['kernel_size']),
-              strides=trial.suggest_categorical("strides", self.cnn_hyp_par['strides']),
+              filters=trial.suggest_int("filters", self.cnn_hyp_par['filters']),
+              kernel_size=trial.suggest_int("kernel_size", self.cnn_hyp_par['kernel_size']),
+              strides=trial.suggest_int("strides", self.cnn_hyp_par['strides']),
               activation="linear", input_shape=input_shape, name=f'conv1d_{trial.number}',
           )
         )
@@ -209,11 +209,11 @@ class HPOpt:
         for i in range(n_conv_layers - 1):
             model.add(
                 Conv1D(
-                  filters=trial.suggest_categorical("filters",
+                  filters=trial.suggest_int("filters",
                                                     self.cnn_hyp_par['filters']),
-                  kernel_size=trial.suggest_categorical("kernel_size",
+                  kernel_size=trial.suggest_int("kernel_size",
                                                         self.cnn_hyp_par['kernel_size']),
-                  strides=trial.suggest_categorical("strides",
+                  strides=trial.suggest_int("strides",
                                                     self.cnn_hyp_par['strides']),
                                                     activation="linear",
                                                     name=f'conv1d_{trial.number}_layer_{i}',
@@ -392,6 +392,61 @@ class HPOpt:
         print("Transformer Best Trial:")
         print(study.best_trial.params)
         return study
+    
+    def cnn_image(self,trial):
+        clear_session()
+        gc.collect()
+        num_conv_layers = trial.suggest_int("num_conv_layers",
+                                            self.cnn_hyp_par['n_conv_layers_min'],
+                                          self.cnn_hyp_par['n_conv_layers_max'])
+        num_filters = trial.suggest_int("num_filters",
+                                        self.cnn_hyp_par['filters'])
+        kernel_size = trial.suggest_int("kernel_size",
+                                        self.cnn_hyp_par['kernel_size'])
+        dropout_rate = trial.suggest_float("conv_dropout_rate_l{}".format(i),
+                                               self.cnn_hyp_par['dropout_min'],
+                                               self.cnn_hyp_par['dropout_max'])
+        num_classes = self.num_classes
+        input_shape = (self.X_train.shape[1], self.X_train.shape[2], self.X_train.shape[3])
+        model = Sequential()
+        for i in range(num_conv_layers):
+            if i == 0:
+                model.add(
+                    Conv2D(
+                        filters=num_filters,
+                        kernel_size=kernel_size,
+                        activation="relu",
+                        input_shape=input_shape
+                    )
+                )
+                model.add(MaxPooling2D(pool_size=(2, 2)))
+
+            else:
+                model.add(
+                    Conv2D(
+                        filters=num_filters,
+                        kernel_size=kernel_size,
+                        activation="relu"
+                    )
+                )
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Dropout(dropout_rate))
+        model.add(Flatten())
+        model.add(Dense(128, activation='relu'))
+        model.add(Dropout(dropout_rate))
+        model.add(Dense(num_classes, activation='softmax'))
+        model.compile(optimizer='adam',
+                    loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+                    metrics=['accuracy'])
+        model.fit(self.X_train, self.Y_train,
+                            validation_data=(self.X_valid, self.Y_valid),
+                            shuffle=True, batch_size=self.batch_size,
+                            epochs=self.epochs)
+        score = model.evaluate(self.X_valid, self.Y_valid, verbose=0)
+        print(f"Trial {trial.number}, Score: {score[1]}")
+        print(f"Parameters: {trial.params}")
+        return score[1]
+    
 
     def optimize(self, model_type, sampler=None):
         """"
@@ -423,6 +478,11 @@ class HPOpt:
                            n_trials=self.n_trials,
                            gc_after_trial=True)
             print("CNN Best Trial:")
+        elif model_type == "cnn_image":
+            study.optimize(self.cnn_image,
+                           n_trials=self.n_trials,
+                           gc_after_trial=True)
+            print("CNN Best Trial:") 
         elif model_type == "transformer":
             if self.transformer_hyp_par is None:
                 raise ValueError("Hyperparameters for Transformer model are missing.")

@@ -197,9 +197,15 @@ class HPOpt:
         model = Sequential()
         model.add(
           Conv1D(
-              filters=trial.suggest_int("filters", self.cnn_hyp_par['filters']),
-              kernel_size=trial.suggest_int("kernel_size", self.cnn_hyp_par['kernel_size']),
-              strides=trial.suggest_int("strides", self.cnn_hyp_par['strides']),
+              filters=trial.suggest_int("filters", 
+                                        self.cnn_hyp_par['filters'][0],
+                                        self.cnn_hyp_par['filters'][1]),
+              kernel_size=trial.suggest_int("kernel_size",
+                                            self.cnn_hyp_par['kernel_size'][0],
+                                            self.cnn_hyp_par['kernel_size'][1]),
+              strides=trial.suggest_int("strides",
+                                        self.cnn_hyp_par['strides'][0],
+                                        self.cnn_hyp_par['strides'][1]),
               activation="linear", input_shape=input_shape, name=f'conv1d_{trial.number}',
           )
         )
@@ -209,12 +215,15 @@ class HPOpt:
         for i in range(n_conv_layers - 1):
             model.add(
                 Conv1D(
-                  filters=trial.suggest_int("filters",
-                                                    self.cnn_hyp_par['filters']),
+                  filters=trial.suggest_int("filters", 
+                                        self.cnn_hyp_par['filters'][0],
+                                        self.cnn_hyp_par['filters'][1]),
                   kernel_size=trial.suggest_int("kernel_size",
-                                                        self.cnn_hyp_par['kernel_size']),
+                                            self.cnn_hyp_par['kernel_size'][0],
+                                            self.cnn_hyp_par['kernel_size'][1]),
                   strides=trial.suggest_int("strides",
-                                                    self.cnn_hyp_par['strides']),
+                                        self.cnn_hyp_par['strides'][0],
+                                        self.cnn_hyp_par['strides'][1]),
                                                     activation="linear",
                                                     name=f'conv1d_{trial.number}_layer_{i}',
               )
@@ -399,10 +408,12 @@ class HPOpt:
         num_conv_layers = trial.suggest_int("num_conv_layers",
                                             self.cnn_hyp_par['n_conv_layers_min'],
                                           self.cnn_hyp_par['n_conv_layers_max'])
-        num_filters = trial.suggest_int("num_filters",
-                                        self.cnn_hyp_par['filters'])
+        num_filters = trial.suggest_int("num_filters", 
+                                        self.cnn_hyp_par['filters'][0],
+                                        self.cnn_hyp_par['filters'][1])
         kernel_size = trial.suggest_int("kernel_size",
-                                        self.cnn_hyp_par['kernel_size'])
+                                            self.cnn_hyp_par['kernel_size'][0],
+                                            self.cnn_hyp_par['kernel_size'][1])
         dropout_rate = trial.suggest_float("conv_dropout_rate_l{}".format(i),
                                                self.cnn_hyp_par['dropout_min'],
                                                self.cnn_hyp_par['dropout_max'])

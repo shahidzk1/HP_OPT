@@ -7,6 +7,9 @@
   - The colab uses the above 4 different ML algorithms for the Higgs selection from the background and the data comes from the [HiggsChallenge](https://www.kaggle.com/competitions/higgs-boson/data)
     - The colab also shows the inner workings of the ML model by using the Shapley score using the SHAP library. The SHAP method fits a simplified model on the ML model locally. The contribution of an individual variable is the difference between its presence and absence while predicting a label for a class.
   - The offline notebook is available at the [link](https://github.com/shahidzk1/HP_OPT/blob/main/Higgs_challenge/HiggsBosonChallenge.ipynb)
+## Flowers classification
+ - To classify flowers from 5 different species CNN is used [google colab](https://colab.research.google.com/drive/1GqXfQ9thSFojbgLURxic5kIFXJL0l0xB?usp=sharing)
+## Running the code on your personal computer
   - If you want to run it on your personal computer e.g. on Visual Studio or terminal then
   - cd /directory/on/your/personal/computer
     - Clone the repository:
@@ -35,3 +38,4 @@
           pip install optuna
           pip install optuna-integration
     ```
+    

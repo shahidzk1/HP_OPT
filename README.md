@@ -37,10 +37,11 @@
           git checkout branch_name
       ```
     - if you find issues then kindly mention them in the issues
-    - if you modified the code for the better, then kindly commit the changes with a comment
+    - if you modified the code for the better, then kindly commit the changes with a comment and then make a merge request
        ```
           git add file.py
           git commmit -m "this comment is for the changes xyz"
+       
       ```
 ### Azure Cloud
  - Running on Azure cloud, Azure AI machine learning studio, can lead to warnings about the scikit-learn version, which can be ignored.

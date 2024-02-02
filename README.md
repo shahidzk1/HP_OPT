@@ -31,6 +31,17 @@
           OK
           ```
     - Run [the notebook](https://github.com/shahidzk1/Machine_learning/blob/main/Higgs_challenge/HiggsBosonChallenge_personal_PC.ipynb)
+    - If you want to play with the code, then create your branch and move to that branch
+      ```
+          git branch branch_name
+          git checkout branch_name
+      ```
+    - if you find issues then kindly mention them in the issues
+    - if you modified the code for the better, then kindly commit the changes with a comment
+       ```
+          git add file.py
+          git commmit -m "this comment is for the changes xyz"
+      ```
 ### Azure Cloud
  - Running on Azure cloud, Azure AI machine learning studio, can lead to warnings about the scikit-learn version, which can be ignored.
  - If optuna and optuna-integration packages are not found after requirements installation then simply use the following

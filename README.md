@@ -9,6 +9,8 @@
   - The offline notebook is available at the [link](https://github.com/shahidzk1/HP_OPT/blob/main/Higgs_challenge/HiggsBosonChallenge.ipynb)
 ## Flowers classification
  - To classify flowers from 5 different species CNN is used [google colab](https://colab.research.google.com/drive/1GqXfQ9thSFojbgLURxic5kIFXJL0l0xB?usp=sharing)
+ - The notebook uses TPE algorithm for the hyperparameter optimization
+ - The final CNN model is compared on an example with the object detection model from cvlib library
 ## Running the code on your personal computer
   - If you want to run it on your personal computer e.g. on Visual Studio or terminal then
   - cd /directory/on/your/personal/computer

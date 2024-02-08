@@ -1,6 +1,6 @@
 numpy>=1.23
 pandas>=1.5
-sklearn>=1.2.2
+scikit-learn>=1.2.2
 # Machine learning libraries
 tensorflow>=2.2.0
 optuna>=3.4

@@ -46,7 +46,7 @@
        
       ```
 ### Azure Cloud
- - Running on Azure cloud, Azure AI machine learning studio, can lead to warnings about the scikit-learn version, which can be ignored.
+ - Running on Azure cloud, in a terminal on notebooks in Azure AI machine learning studio, can lead to warnings about the scikit-learn version, which can be ignored.
  - If optuna and optuna-integration packages are not found after requirements installation then simply use the following
     ```
           pip install optuna
